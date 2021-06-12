@@ -35,8 +35,8 @@ void IprivKey::Init(v8::Local<v8::Object> exports)
 	Nan::SetPrototypeMethod(tpl, "Sign", Sign);
 	Nan::SetPrototypeMethod(tpl, "Verify", Verify);
 
-	constructor.Reset(tpl->GetFunction());
-	exports->Set(Nan::New("IprivKey").ToLocalChecked(), tpl->GetFunction());
+	constructor.Reset(Nan::GetFunction(tpl).ToLocalChecked());
+	exports->Set(Nan::New("IprivKey").ToLocalChecked(), Nan::GetFunction(tpl).ToLocalChecked());
 }
 
 //---------------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ void IprivKey::New(const Nan::FunctionCallbackInfo<v8::Value>& info)
 	  const int argc = 1;
 	  v8::Local<v8::Value> argv[argc] = { info[0] };
     v8::Local<v8::Function> cons = Nan::New<v8::Function>(constructor);
-    info.GetReturnValue().Set(cons->NewInstance(0, argv));
+    info.GetReturnValue().Set(Nan::NewInstance(cons, argc, argv).ToLocalChecked());
   }
 }
 
@@ -98,12 +98,12 @@ void IprivKey::OpenSecretKeyFromFile(const Nan::FunctionCallbackInfo<v8::Value> 
     	return;
     }
 
-    std::string filePath = *v8::String::Utf8Value(info[0]->ToString());
-    std::string password = *v8::String::Utf8Value(info[1]->ToString());
+    Nan::Utf8String filePath(info[0]);
+    Nan::Utf8String password(info[1]);
 
 //    std::cerr << "file: " << filePath << "\npassword:" << password << std::endl << "key: " << key << "\n";
 
-	int rc = Crypt_OpenSecretKeyFromFile(key->eng, filePath.c_str(), password.c_str(), &(key->mSecretKey));
+	int rc = Crypt_OpenSecretKeyFromFile(key->eng, *filePath, *password, &(key->mSecretKey));
 
     //	std::cerr << "open = " << rc << std::endl;
     // std::cerr << "file: " << filePath << "password:" << password << std::endl << "RC=" << rc << std::endl;
@@ -128,6 +128,7 @@ int IprivKey::OpenPublicKeyFromFile(const std::string & aFileName, unsigned long
 //---------------------------------------------------------------------------------------
 void IprivKey::OpenPublicKeyFromFile(const Nan::FunctionCallbackInfo<v8::Value> & info)
 {
+    v8::Local<v8::Context> context = info.GetIsolate()->GetCurrentContext();
 	IprivKey * key = ObjectWrap::Unwrap<IprivKey>(info.Holder());
 
     if (info.Length() < 2) {
@@ -140,8 +141,10 @@ void IprivKey::OpenPublicKeyFromFile(const Nan::FunctionCallbackInfo<v8::Value> 
     	return;
     }
 
-    key->mPublicKeyPath = *v8::String::Utf8Value(info[0]->ToString());
-    uint32_t serial = info[1]->Uint32Value();
+    const Nan::Utf8String publicKeyPath(info[0]);
+    key->mPublicKeyPath = *publicKeyPath;
+
+    uint32_t serial = info[1]->Uint32Value(context).FromJust();
 
     if (serial == 0) {
     	Nan::ThrowTypeError("Wrong arguments 1");
@@ -247,8 +250,8 @@ void IprivKey::Sign(const Nan::FunctionCallbackInfo<v8::Value> & info)
 //---------------------------------------------------------------------------------------
 void Init(v8::Local<v8::Object> exports)
 {
-	exports->Set(Nan::New("initialize").ToLocalChecked(), Nan::New<v8::FunctionTemplate>(initialize)->GetFunction());
-	exports->Set(Nan::New("done").ToLocalChecked(), Nan::New<v8::FunctionTemplate>(done)->GetFunction());
+	exports->Set(Nan::New("initialize").ToLocalChecked(), Nan::GetFunction(Nan::New<v8::FunctionTemplate>(initialize)).ToLocalChecked());
+	exports->Set(Nan::New("done").ToLocalChecked(), Nan::GetFunction(Nan::New<v8::FunctionTemplate>(done)).ToLocalChecked());
 
 	IprivKey::Init(exports);
 }

@@ -8,7 +8,7 @@ class GetBuffer
 	char * mBuffer;
 	int mLength;
 
-	v8::String::Utf8Value * mStringValue;
+	Nan::Utf8String * mStringValue;
 
 public:
 	//---------------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ public:
 #endif            
             if (aValue->IsString())
 		{
-			mStringValue = new v8::String::Utf8Value(aValue);
+			mStringValue = new Nan::Utf8String(aValue);
 			mBuffer = **mStringValue;
 			mLength = mStringValue->length();
 		}
