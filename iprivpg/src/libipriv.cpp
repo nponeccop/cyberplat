@@ -897,20 +897,20 @@ int IPRIVAPI Crypt_EncryptLong(const char *src, int nsrc, char *dst, int ndst, I
 		return CRYPT_ERR_NOT_SUPPORT;
 
 	if (nsrc < 0)
-		nsrc = strlen(src)+1;	// Ð´Ð»Ñ ÑÑ‚Ñ€Ð¾Ðº ÑÐ¾Ñ…Ñ€Ð°Ð½Ð¸Ð¼ ÐºÐ¾Ð½ÐµÑ‡Ð½Ñ‹Ð¹ Ð½Ð¾Ð»ÑŒ
+		nsrc = strlen(src)+1;	// äëÿ ñòðîê ñîõðàíèì êîíå÷íûé íîëü
 	if (!nsrc) {
 		*dst = 0;
 		return 0;
 	}
 
-	// ÑÐ¾Ð·Ð´Ð°ÐµÐ¼ ÑÐµÑÑÐ¸Ð¾Ð½Ð½Ñ‹Ð¹ ÐºÐ»ÑŽÑ‡
+	// ñîçäàåì ñåññèîííûé êëþ÷
 	unsigned char ideakey[IDEAKEYSIZE];
 	if (crypt_eng_list[eng].gen_random_bytes)
 		crypt_eng_list[eng].gen_random_bytes(ideakey, sizeof(ideakey));
 	else
 		return CRYPT_ERR_NOT_SUPPORT;
 
-	// Ð·Ð°ÑˆÐ¸Ñ„Ñ€Ð¾Ð²Ð²Ñ‹Ð²Ð°ÐµÐ¼ ÐºÐ»ÑŽÑ‡, Ñ‡Ñ‚Ð¾Ð±Ñ‹ ÑƒÐ·Ð½Ð°Ñ‚ÑŒ Ð´Ð»Ð¸Ð½Ñƒ
+	// çàøèôðîââûâàåì êëþ÷, ÷òîáû óçíàòü äëèíó
 	unsigned char mpi[MAX_MPI_LENGTH];
 	int rc = crypt_eng_list[eng].public_key_encrypt(ideakey, sizeof(ideakey), mpi, sizeof(mpi), key);
 	if (rc) return rc;
@@ -918,32 +918,32 @@ int IPRIVAPI Crypt_EncryptLong(const char *src, int nsrc, char *dst, int ndst, I
 	unsigned char *p = mpi;
 	while (p < mpi + MAX_MPI_LENGTH && !*p)
 		p++;
-	uint16 key_len = sizeof(mpi) - (p - mpi);	// Ð´Ð»Ð¸Ð½Ð° Ð·Ð°ÑˆÐ¸Ñ„Ñ€Ð¾Ð²Ð°Ð½Ð½Ð¾Ð³Ð¾ ÐºÐ»ÑŽÑ‡Ð°
+	uint16 key_len = sizeof(mpi) - (p - mpi);	// äëèíà çàøèôðîâàííîãî êëþ÷à
 
-	// Ð¿Ð¾Ð´Ð³Ð¾Ñ‚Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¿Ð°ÐºÐµÑ‚ Ñ Ð·Ð°ÑˆÐ¸Ñ„Ñ€Ð¾Ð²Ð°Ð½Ð½Ñ‹Ð¼Ð¸ Ð´Ð°Ð½Ð½Ñ‹Ð¼Ð¸
+	// ïîäãîòîâèòü ïàêåò ñ çàøèôðîâàííûìè äàííûìè
 	int record_len = key_len + nsrc + 7;
 	unsigned char *record = (unsigned char *) i_malloc(record_len);
 	if (!record)
 		return CRYPT_ERR_OUT_OF_MEMORY;
 
-	*record = IPRIV_SYMM_IDEA;	// ÐºÐ¾Ð´ Ð°Ð»Ð³Ð¾Ñ€Ð¸Ñ‚Ð¼Ð°
+	*record = IPRIV_SYMM_IDEA;	// êîä àëãîðèòìà
 
-	uint16 tmp1 = rotate16(key_len);	// Ð´Ð»Ð¸Ð½Ð° Ð·Ð°ÑˆÐ¸Ñ„Ñ€Ð¾Ð²Ð°Ð½Ð½Ð¾Ð³Ð¾ ÐºÐ»ÑŽÑ‡Ð°
+	uint16 tmp1 = rotate16(key_len);	// äëèíà çàøèôðîâàííîãî êëþ÷à
 	memcpy(record+1, &tmp1, sizeof(tmp1));
 
-	memcpy(record+3, mpi+(sizeof(mpi)-key_len), key_len);		// ÑÐ°Ð¼ Ð·Ð°ÑˆÐ¸Ñ„Ñ€Ð¾Ð²Ð°Ð½Ð½Ñ‹Ð¹ ÐºÐ»ÑŽÑ‡
+	memcpy(record+3, mpi+(sizeof(mpi)-key_len), key_len);		// ñàì çàøèôðîâàííûé êëþ÷
 
-	uint32 tmp2 = rotate32(nsrc);	// Ð´Ð»Ð¸Ð½Ð° Ð´Ð°Ð½Ð½Ñ‹Ñ…
+	uint32 tmp2 = rotate32(nsrc);	// äëèíà äàííûõ
 	memcpy(record+key_len+3, &tmp2, sizeof(tmp2));
 
 	IdeaCfbContext cfb;
 	ideaCfbInit(&cfb, ideakey);
-	ideaCfbEncrypt(&cfb, (unsigned char *)src, record+key_len+7, nsrc);	// Ð·Ð°Ð¿Ð¸ÑÐ°Ñ‚ÑŒ Ð·Ð°ÑˆÐ¸Ñ„Ñ€Ð¾Ð²Ð°Ð½Ð½Ñ‹Ðµ Ð´Ð°Ð½Ð½Ñ‹Ðµ
+	ideaCfbEncrypt(&cfb, (unsigned char *)src, record+key_len+7, nsrc);	// çàïèñàòü çàøèôðîâàííûå äàííûå
 	ideaCfbDestroy(&cfb);
 	memset(ideakey, 0, sizeof(ideakey));
 
-	// Ð¿Ñ€ÐµÐ¾Ð±Ñ€Ð°Ð·Ð¾Ð²Ð°Ñ‚ÑŒ Ð² base64
-	unsigned char *b64_record = (unsigned char *) i_malloc(record_len*2);	// Ñ Ð·Ð°Ð¿Ð°ÑÐ¾Ð¼
+	// ïðåîáðàçîâàòü â base64
+	unsigned char *b64_record = (unsigned char *) i_malloc(record_len*2);	// ñ çàïàñîì
 	if (!b64_record) {
 		i_free(record);
 		return CRYPT_ERR_OUT_OF_MEMORY;
@@ -990,7 +990,7 @@ int IPRIVAPI Crypt_DecryptLong(const char *src, int nsrc, char *dst, int ndst, I
 		return 0;
 	}
 
-	// Ñ€Ð°ÑÐºÐ¾Ð´Ð¸Ñ€ÑƒÐµÐ¼ Ð¸Ð· base64
+	// ðàñêîäèðóåì èç base64
 	unsigned char *record = (unsigned char *) i_malloc(nsrc);
 	if (!record)
 		return CRYPT_ERR_OUT_OF_MEMORY;
@@ -1008,7 +1008,7 @@ int IPRIVAPI Crypt_DecryptLong(const char *src, int nsrc, char *dst, int ndst, I
 	memcpy(&key_len, record+1, sizeof(key_len));
 	key_len = rotate16(key_len);
 
-	// Ñ€Ð°ÑÑˆÐ¸Ñ„Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ ÑÐµÑÑÐ¸Ð¾Ð½Ð½Ñ‹Ð¹ ÐºÐ»ÑŽÑ‡
+	// ðàñøèôðîâàòü ñåññèîííûé êëþ÷
 	unsigned char ideakey[IDEAKEYSIZE];
 	int rc = crypt_eng_list[eng].secret_key_decrypt(record+3, key_len, ideakey, sizeof(ideakey), key);
 	if (rc <= 0) {
@@ -1024,7 +1024,7 @@ int IPRIVAPI Crypt_DecryptLong(const char *src, int nsrc, char *dst, int ndst, I
 		return CRYPT_ERR_OUT_OF_MEMORY;
 	}
 
-	// Ñ€Ð°ÑÑˆÐ¸Ñ„Ñ€Ð¾Ð²Ñ‹Ð²Ð°ÐµÐ¼ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ
+	// ðàñøèôðîâûâàåì ñîîáùåíèå
 	IdeaCfbContext cfb;
 	ideaCfbInit(&cfb, ideakey);
 	ideaCfbDecrypt(&cfb, record+key_len+7, (unsigned char *) dst, data_len);

@@ -481,7 +481,7 @@ JNIEXPORT jstring JNICALL Java_org_CyberPlat_IPriv_1native_signText_1native
 	    utils::throw_new(env,-71);
 	else
 	{
-	    int dst_len=src_len+512;
+	    int dst_len=src_len+1024;
 	    char* dst=(char*)malloc(dst_len);
 	
 	    if(!dst)
@@ -571,7 +571,7 @@ JNIEXPORT jstring JNICALL Java_org_CyberPlat_IPriv_1native_signText2_1native
 			utils::throw_new(env,-71);
 		else
 		{
-			int dst_len=src_len+512;
+			int dst_len=src_len+1024;
 			char* dst=(char*)malloc(dst_len);
 
 			if(!dst)

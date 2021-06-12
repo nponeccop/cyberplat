@@ -1,9 +1,9 @@
 # options
 OPT_OPENSSL		= false		# enable openssl engine
 OPT_RSAREF		= true		# enable RSAREF engine
-OPT_PKCS11		= false		# enable PKCS11 eToken engine
-OPT_PKCS11_RUTOKEN	= false		# enable PKCS11 RuToken engine
-OPT_WINCRYPT		= false		# enable WinCrypt API engine
+OPT_PKCS11		= true		# enable PKCS11 eToken engine
+OPT_PKCS11_RUTOKEN	= true		# enable PKCS11 RuToken engine
+OPT_WINCRYPT		= true		# enable WinCrypt API engine
 OPT_SENSELOCK		= false		# enable SenseLock  engine
 OPT_MT			= true		# /MT or /MD
 OPT_RSAREF_GENKEY	= false		# force RSAREF engine keygen for win32

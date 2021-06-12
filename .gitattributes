@@ -1,7 +1,3 @@
-
-[core]
-	autocrlf = true
-
 *.key	-text
-
-
+*.{cpp,h,c}	text working-tree-encoding=WINDOWS-1251 eol=crlf
+*.sh	text eol=lf

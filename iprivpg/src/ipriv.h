@@ -94,7 +94,7 @@ typedef struct
 	int (*secret_key_decrypt) (unsigned char* src,int nsrc,unsigned char* dst,int ndst,IPRIV_KEY* k);
 }IPRIV_ENGINE;
 
-// РѕРґРЅРё РґРІРёР¶РєРё РјРѕРіСѓС‚ РІС‹Р·С‹РІР°С‚СЊ СЂРµР°Р»РёР·Р°С†РёСЋ РґСЂСѓРіРёС… РґРІРёР¶РєРѕРІ
+// одни движки могут вызывать реализацию других движков
 extern IPRIV_ENGINE crypt_eng_list[IPRIV_MAX_ENG_NUM];
 
 

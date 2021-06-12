@@ -1,0 +1,6 @@
+
+30-Aug-2016
+    - PHP extension now builds under PHP 7
+    - fix documentation for PHP a little bit
+    - add CHANGES file
+

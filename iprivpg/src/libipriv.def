@@ -41,3 +41,4 @@ EXPORTS
 	Crypt_DecryptLong
 	Crypt_GetKeyBits
 	Crypt_CloseKey
+	Crypt_SetHashAlg

@@ -14,7 +14,7 @@
 #else
 #include <openssl/md5.h>
 #endif
-#include "sha256.h"
+#include "rfc6234/sha256.h"
 
 int Crypt_ReadSecretKey(const char* src,int nsrc,const char* passwd,IPRIV_KEY_BODY* key)
 {
