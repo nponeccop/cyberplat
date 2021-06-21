@@ -120,7 +120,11 @@ var Cyberplat = function (ops) {
           log(data);
           const encodedMessageToWin1251 = iconvUtf8ToWin1251.convert(data);
 
-          var answer = parser.parse(crypto.validate(encodedMessageToWin1251));
+          const v = crypto.validate(encodedMessageToWin1251)
+
+          const answerStr = iconvWin1251ToUtf8.convert(v).toString();
+          var answer = parser.parse(answerStr);
+
           callback(answer);
         });
     };
