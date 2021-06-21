@@ -118,7 +118,9 @@ var Cyberplat = function (ops) {
           }
         }).on('complete', function(data) {
           log(data);
-          var answer = parser.parse(crypto.validate(data));
+          const encodedMessageToWin1251 = iconvUtf8ToWin1251.convert(data);
+
+          var answer = parser.parse(crypto.validate(encodedMessageToWin1251));
           callback(answer);
         });
     };
