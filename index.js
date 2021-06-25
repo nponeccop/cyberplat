@@ -141,6 +141,10 @@ var Cyberplat = function (ops) {
         go('payStatus', providerid, obj, callback);
     };
 
+    var getBalance = function (providerid, obj, callback) {
+        go('getBalance', providerid, obj, callback);
+    };
+
 
     // переделать
     var limitStatus = function (obj, callback) {
@@ -153,6 +157,7 @@ var Cyberplat = function (ops) {
     };
 
     return {
+        getBalance: getBalance,
         payCheck: payCheck,
         pay: pay,
         payStatus: payStatus,
